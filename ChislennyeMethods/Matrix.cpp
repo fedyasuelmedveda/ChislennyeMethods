@@ -212,8 +212,79 @@ Matrix* Matrix::SquareRoots(Matrix* b) {
 	}
 	return x;
 }
+double PowN(double x, int n) {
+	if (n == 0)
+		return 1;
+	if (n == 1)
+		return x;
+	if (n % 2 == 0) {
+		double y = PowN(x, n / 2);
+		return y * y;
+	}
+	double y = PowN(x, n / 2);
+	return y * y * x;
+}
+double Matrix::DetRecursive(double sign) {
+	//Print();
+	if (rows == 1 && columns == 1)
+		return sign*GetElement(0, 0);
+	
+	double sum = 0;
+	for (int i = 0; i < rows; i++) {
+		if (GetElement(0, i) != 0) {
+			Matrix* A = new Matrix(rows - 1, columns - 1);
+			for (int j = 1;j < rows; j++) {
+				for (int k = 0; k < columns; k++) {
+					if (k < i) {
+						A->SetElement(j - 1, k, GetElement(j, k));
+					}
+					if (k > i) {
+						A->SetElement(j - 1, k - 1, GetElement(j, k));
+					}
+				}
+			}
+			sum += GetElement(0, i)* A->DetRecursive(PowN(-1,i)*sign);
+		}
+	}
+	//cout << sum << endl;
+	return sum;
+}
+double Matrix::DetLU() {
+	Matrix* L = new Matrix(this);
+	Matrix* U = new Matrix(this);
+	this->Print();
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < columns; j++) {
+			if (i > j)
+				U->SetElement(i, j, 0);
+			if (i < j)
+				L->SetElement(i, j, 0);
+			if (i == j)
+				L->SetElement(i, j, 1);
+		}
+	}
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < columns; j++) {
+			double a = this->GetElement(i, j);
+			if (i <= j) {
+				U->SetElement(i, j, a);
+				for (int k = 0; k < i; k++) {
+					U->SetElement(i, j, U->GetElement(i, j) - L->GetElement(i, k) * U->GetElement(k, j));
+				}
+			}
+			else {
+				L->SetElement(i, j, a);
+				for (int k = 0; k < j; k++) {
+					L->SetElement(i, j, L->GetElement(i, j) - L->GetElement(i, k) * U->GetElement(k, j));
+				}
 
+				L->SetElement(i, j, L->GetElement(i, j) / U->GetElement(j, j));
+			}
 
+		}
+	}
+	return U->TDet();
+}
 Matrix* Matrix::LU(Matrix* b) {
 	Matrix* L = new Matrix(this);
 	Matrix* U = new Matrix(this);
@@ -348,8 +419,8 @@ Matrix* Matrix::Ortho(Matrix* b) {
 		u[i] = Transpose(A->GetRow(i));
 		//u[i]->Print();
 		for (int j = 0; j < i; j++) {
-			cout << A->GetRow(i)->DotProduct(v[j]) << endl;
-			u[i]->Print();
+			//cout << A->GetRow(i)->DotProduct(v[j]) << endl;
+			//u[i]->Print();
 			u[i]= u[i]->Minus(v[j]->MultByNumber (A->GetRow(i)->DotProduct(v[j])));
 		}
 		//cout << 1;

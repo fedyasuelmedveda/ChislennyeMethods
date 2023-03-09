@@ -44,6 +44,7 @@ int main() {
 	b->SetElement(2, 0, -10 + 0.03 * j * j - 0.1 * l * j);
 	b->SetElement(3, 0, -0.2 * k + 0.3 * j + 0.02 * j * j);
 	b->SetElement(4, 0, 0.01 * j * k - 0.5 * k - 0.2 * j * j);
+	
 	A->Print();
 	b->Print();
 	
@@ -67,4 +68,5 @@ int main() {
 	cout << "Norm c3:" << endl << c3->Norm() << endl;
 	//D->Print();
 	*/
+	cout << "det:" << endl << A->DetRecursive(1) << endl;
 }

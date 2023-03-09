@@ -32,6 +32,8 @@ public:
 	static Matrix* Transpose(Matrix* S);
 	//double Sign(double a);
 	double TDet();
+	double DetLU();
+	double DetRecursive(double sign);
 	Matrix* operator*(Matrix* b);
 	Matrix* operator*(double b);
 	Matrix* operator-(Matrix* b);
